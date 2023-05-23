@@ -1,4 +1,5 @@
 # BlazorApp
+Here my code for the SQL Challenge:
 ```sql
 SELECT FirstName + ' ' + LastName AS 'Full Name'
 	,Age
