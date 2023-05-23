@@ -1,0 +1,79 @@
+﻿@page "/car/add"
+@page "/car/edit/{carId:int}"
+@using BlazorApp.Shared.Models
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+
+<h1>@Title Car</h1>
+<hr />
+
+<EditForm Model="@car" OnValidSubmit="SaveCar">
+    <DataAnnotationsValidator />
+    <div class="mb-3">
+        <label for="Make" class="form-label">Make</label>
+        <div class="col-md-4">
+            <InputText class="form-control" @bind-Value="car.Make" />
+        </div>
+        <ValidationMessage For="@(() => car.Make)" />
+    </div>
+    <div class="mb-3">
+        <label for="Model" class="form-label">Model</label>
+        <div class="col-md-4">
+            <InputText class="form-control" @bind-Value="car.Model" />
+        </div>
+        <ValidationMessage For="@(() => car.Model)" />
+    </div>
+    <div class="mb-3">
+        <label for="Year" class="form-label">Year</label>
+        <div class="col-md-4">
+            <InputText class="form-control" @bind-Value="car.Year" />
+        </div>
+        <ValidationMessage For="@(() => car.Year)" />
+    </div>
+    <div class="mb-3">
+        <label for="Doors" class="form-label">Doors</label>
+        <div class="col-md-4">
+            <InputText class="form-control" @bind-Value="car.Doors" />
+        </div>
+        <ValidationMessage For="@(() => car.Doors)" />
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button class="btn btn-light" @onclick="Cancel">Cancel</button>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int carId { get; set; }
+
+    protected string Title = "Add";
+    protected Car car = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (carId != 0)
+        {
+            Title = "Edit";
+            car = await Http.GetFromJsonAsync<Car>("api/Car/" + carId);
+        }
+    }
+
+    protected async Task SaveCar()
+    {
+        if (car.Id != 0)
+        {
+            await Http.PutAsJsonAsync("api/Car", car);
+        }
+        else
+        {
+            await Http.PostAsJsonAsync("api/Car", car);
+        }
+        Cancel();
+    }
+
+    public void Cancel()
+    {
+        NavigationManager.NavigateTo("/fetchcardetails");
+    }
+}
